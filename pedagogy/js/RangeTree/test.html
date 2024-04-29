@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paper.js Example</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.15/paper-full.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://d3js.org/d3.v3.js"></script>
+
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden; /* Prevents scrolling on the body level */
+    }
+    .container {
+      display: flex;
+      height: 100vh; /* Full viewport height */
+    }
+    #myCanvas, #tree-container {
+      flex: 1; /* Each child will take equal width */
+      background-color: #cccccc; /* Just for visibility */
+      overflow: auto; /* Allows scrolling within each section */
+    }
+    #myCanvas {
+      background-color: #cccccc; /* Specific background for canvas */
+    }
+    font-family:sans-serif;.node {
+                             cursor: pointer;
+                           }
+
+    .overlay{
+      background-color:#EEE;
+    }
+
+    .node circle {
+      fill: #fff;
+      stroke: steelblue;
+      stroke-width: 1.5px;
+    }
+
+    .node text {
+      font-size:10px;
+    }
+
+    .link {
+      fill: none;
+      stroke: #ccc;
+      stroke-width: 1.5px;
+    }
+
+    .templink {
+      fill: none;
+      stroke: red;
+      stroke-width: 3px;
+    }
+
+    .ghostCircle.show{
+      display:block;
+    }
+
+    .ghostCircle, .activeDrag .ghostCircle{
+      display: none;
+    }
+  </style>
+<!--  <style>-->
+<!--    canvas {-->
+<!--      width: 100%;-->
+<!--      height: 100vh;-->
+<!--    }-->
+<!--  </style>-->
+</head>
+<body>
+<script src="RangeTree.js"></script>
+<div class="container">
+  <canvas id="myCanvas"></canvas>
+  <div id="tree-container"></div>
+</div>
+<script src="visualizeTree.js"></script>
+<script src="paperJsDemo.js"></script>
+</body>
+</html>

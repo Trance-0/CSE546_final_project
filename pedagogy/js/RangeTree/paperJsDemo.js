@@ -1,9 +1,8 @@
 paper.setup(document.getElementById('myCanvas'));
+
 var tools = new paper.Tool();
 
 var points = [];
-
-
 
 tools.onMouseDown = function(event) {
     var point = event.point;

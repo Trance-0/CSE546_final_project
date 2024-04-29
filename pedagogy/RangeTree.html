@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- import jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- import graphics -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.12.15/paper-full.min.js"></script>
+    <script src="https://d3js.org/d3.v3.js"></script>
+    <!-- load bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <!-- import custom code -->
+    <!-- <script src="./js/PageOnLoad.js"></script> -->
+    <!-- meta -->
+    <meta charset="utf-8" />
+    <title>Range Tree</title>
+
+
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            /* Prevents scrolling on the body level */
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            /* Full viewport height */
+        }
+
+        #myCanvas,
+        #tree-container {
+            flex: 1;
+            /* Each child will take equal width */
+            background-color: #cccccc;
+            /* Just for visibility */
+            overflow: auto;
+            /* Allows scrolling within each section */
+        }
+
+        #myCanvas {
+            background-color: #ffffff;
+            /* Specific background for canvas */
+        }
+
+        font-family:sans-serif;
+
+        .node {
+            cursor: pointer;
+        }
+
+        .overlay {
+            background-color: #EEE;
+        }
+
+        .node circle {
+            fill: #fff;
+            stroke: steelblue;
+            stroke-width: 1.5px;
+        }
+
+        .node text {
+            font-size: 10px;
+        }
+
+        .link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 1.5px;
+        }
+
+        .templink {
+            fill: none;
+            stroke: red;
+            stroke-width: 3px;
+        }
+
+        .ghostCircle.show {
+            display: block;
+        }
+
+        .ghostCircle,
+        .activeDrag .ghostCircle {
+            display: none;
+        }
+    </style>
+
+
+    <style>
+        .wustl-red-bg {
+            background-color: #a51417;
+            color: var(--bs-light);
+        }
+
+        .wustl-red-text {
+            color: #a51417;
+        }
+    </style>
+
+</head>
+
+<body>
+    <header></header>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8 mt-3">
+                <canvas class="h-100 w-100" id="myCanvas"></canvas>
+            </div>
+            <div class="col-md-4 mt-3">
+                <h3> Range tree Algorithm</h3>
+
+                <div>
+                    <!-- help text -->
+                    <ol>
+                    <li>
+                        Click on the left panel to insert point
+                    </li>
+                </ol>
+                </div>
+                <h4> Algorithm by step</h4>
+                <div> </div>
+                <div class="row g-2">
+                    <div class="col-auto">
+                        <button class="btn btn-primary">
+                            Previous step
+                        </button>
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-primary">
+                            Next step
+                        </button>
+                    </div>
+                </div>
+                <div id="tree-container" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- after loading codes -->
+
+    <script src="./js/RangeTree/RangeTree.js"></script>
+    <script src="./js/RangeTree/visualizeTree.js"></script>
+    <script src="./js/RangeTree/paperJsDemo.js"></script>
+</body>
+
+</html>

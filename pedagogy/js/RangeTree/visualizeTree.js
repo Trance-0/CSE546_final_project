@@ -1,9 +1,7 @@
-
-
-
-
-// Get JSON data
-
+/*
+* Visualize tree from json data
+* Reference: https://jsfiddle.net/heaversm/nw577/
+*/
 
 // Calculate total nodes, max label length
 var totalNodes = 0;

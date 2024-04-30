@@ -16,85 +16,12 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
     <!-- import custom code -->
-    <!-- <script src="./js/PageOnLoad.js"></script> -->
+    <script src="./js/pageOnLoad.js"></script>
     <!-- meta -->
     <meta charset="utf-8" />
     <title>Range Tree</title>
 
-
-    <style>
-        body,
-        html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-            /* Prevents scrolling on the body level */
-        }
-
-        .container {
-            display: flex;
-            height: 100vh;
-            /* Full viewport height */
-        }
-
-        #myCanvas,
-        #tree-container {
-            flex: 1;
-            /* Each child will take equal width */
-            background-color: #cccccc;
-            /* Just for visibility */
-            overflow: auto;
-            /* Allows scrolling within each section */
-        }
-
-        #myCanvas {
-            background-color: #ffffff;
-            /* Specific background for canvas */
-        }
-
-        font-family:sans-serif;
-
-        .node {
-            cursor: pointer;
-        }
-
-        .overlay {
-            background-color: #EEE;
-        }
-
-        .node circle {
-            fill: #fff;
-            stroke: steelblue;
-            stroke-width: 1.5px;
-        }
-
-        .node text {
-            font-size: 10px;
-        }
-
-        .link {
-            fill: none;
-            stroke: #ccc;
-            stroke-width: 1.5px;
-        }
-
-        .templink {
-            fill: none;
-            stroke: red;
-            stroke-width: 3px;
-        }
-
-        .ghostCircle.show {
-            display: block;
-        }
-
-        .ghostCircle,
-        .activeDrag .ghostCircle {
-            display: none;
-        }
-    </style>
-
+    <link rel="stylesheet" href="./css/visualizer.css">
 
     <style>
         .wustl-red-bg {
@@ -111,6 +38,26 @@
 
 <body>
     <header></header>
+    <!-- Parameters setting -->
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Set up parameters</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="container-fluid">
         <div class="row">
@@ -118,40 +65,97 @@
                 <canvas class="h-100 w-100" id="myCanvas"></canvas>
             </div>
             <div class="col-md-4 mt-3">
-                <h3> Range tree Algorithm</h3>
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title"> Range tree Algorithm</h3>
 
-                <div>
-                    <!-- help text -->
-                    <ol>
-                    <li>
-                        Click on the left panel to insert point
-                    </li>
-                </ol>
-                </div>
-                <h4> Algorithm by step</h4>
-                <div> </div>
-                <div class="row g-2">
-                    <div class="col-auto">
-                        <button class="btn btn-primary">
-                            Previous step
-                        </button>
+                        <!-- help text -->
+                        <ul>
+                            <li>
+                                Click on the left panel to insert point
+                            </li>
+                            <li>
+                                Select option below to query points
+                            </li>
+                            <li>
+                                Click and draw to select query when query mode is on
+                            </li>
+                        </ul>
+                        <div class="row">
+                            <div class="col-auto">
+                                <button class="btn btn-primary">
+                                    Previous step
+                                </button>
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn btn-primary">
+                                    Next step
+                                </button>
+                            </div>
+                            <div class="col-auto">
+                                <button id="query-button" class="btn btn-success">
+                                    Query
+                                </button>
+                                <button id="insert-button" class="btn btn-success">
+                                    Add new point
+                                </button>
+                            </div>
+                            <div class="col-auto">
+                                <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                                    data-bs-target="#staticBackdrop">
+                                    Settings
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-auto">
-                        <button class="btn btn-primary">
-                            Next step
-                        </button>
+                </div>
+                <div class="card mt-3">
+
+                    <div id="tree-container" class="card-img-top" style="height: 18rem;"></div>
+                    <div class="card-body">
+                        <h4 class="card-title"> Algorithm by step</h4>
+                        <div data-bs-spy="scroll" data-bs-target="#navbar-example3" data-bs-smooth-scroll="true" class="scrollspy-example-2 overflow-y-auto" style="max-height: 150px;" tabindex="0">
+                        <b>BuildXTree(S)</b>
+                        <ul class="list-unstyled">
+                            <li>If |S|=1: // create leaf node</li>
+                            <li class="ms-3">
+                                <ul class="list-unstyled">
+                                    <li>v = new X leaf node</li>
+                                    <li>v.pt = S</li>
+                                    <li>v.ytree = MakeYTreeFromOnePoint(S)</li>
+                                </ul>
+                            </li>
+                            <li>Else: // create a non-leaf node</li>
+                            <li class="ms-3">
+                                <ul class="list-unstyled">
+                                    <li>v = new non-leaf X node</li>
+                                    <li>v.val = median of X coordinates of all points in S</li>
+                                    <li>L = subset of S whose X coordinates are not greater than v.val</li>
+                                    <li>R = subset of S whose X coordinates are greater than v.val</li>
+                                    <li>v.left = BuildXTree(L)</li>
+                                    <li>v.right = BuildXTree(R)</li>
+                                    <li>v.ytree = MergeYTree(v.left.ytree,v.right.ytree)</li>
+                                </ul>
+                            </li>
+                            <li>Return v</li>
+                        </ul>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <textarea class="form-control" placeholder="Out put will be shown here"
+                            id="outputTextarea"></textarea>
                     </div>
                 </div>
-                <div id="tree-container" class="mt-3"></div>
+
             </div>
         </div>
     </div>
 
     <!-- after loading codes -->
 
-    <script src="./js/RangeTree/RangeTree.js"></script>
-    <script src="./js/RangeTree/visualizeTree.js"></script>
-    <script src="./js/RangeTree/paperJsDemo.js"></script>
+    <script src="./js/rangeTree/rangeTree.js"></script>
+    <script src="./js/rangeTree/visualizeTree.js"></script>
+    <script src="./js/rangeTree/rangeTreeDemo.js"></script>
 </body>
 
 </html>

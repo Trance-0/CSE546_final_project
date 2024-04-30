@@ -1,0 +1,70 @@
+body,
+html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    /* Prevents scrolling on the body level */
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+    /* Full viewport height */
+}
+
+#myCanvas,
+#tree-container {
+    flex: 1;
+    /* Each child will take equal width */
+    background-color: #cccccc;
+    /* Just for visibility */
+    overflow: auto;
+    /* Allows scrolling within each section */
+}
+
+#myCanvas {
+    background-color: #ffffff;
+    /* Specific background for canvas */
+}
+
+font-family:sans-serif;
+
+.node {
+    cursor: pointer;
+}
+
+.overlay {
+    background-color: #EEE;
+}
+
+.node circle {
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+}
+
+.node text {
+    font-size: 10px;
+}
+
+.link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1.5px;
+}
+
+.templink {
+    fill: none;
+    stroke: red;
+    stroke-width: 3px;
+}
+
+.ghostCircle.show {
+    display: block;
+}
+
+.ghostCircle,
+.activeDrag .ghostCircle {
+    display: none;
+}

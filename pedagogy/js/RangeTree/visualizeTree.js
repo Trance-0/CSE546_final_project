@@ -18,8 +18,11 @@ var duration = 750;
 var root;
 
 // size of the diagram
-var viewerWidth = $(document).width();
-var viewerHeight = $(document).height();
+// var viewerWidth = $(document).width();
+// var viewerHeight = $(document).height();
+// var viewerWidth = 450;
+var viewerWidth = $("#tree-container").width();
+var viewerHeight = 300;
 
 var tree = d3.layout.tree()
     .size([viewerHeight, viewerWidth]);

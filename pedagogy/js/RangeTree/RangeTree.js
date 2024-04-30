@@ -1,3 +1,8 @@
+/*
+* Core algorithm for range tree, written by Dijkstra Liu, debugging step added by Zheyuan Wu
+*/
+
+// range tree point class
 class rPoint {
     constructor(x, y) {
         this.x = x;
@@ -5,16 +10,18 @@ class rPoint {
     }
 }
 
+// range tree node class
 class rNode {
     constructor(median, range) {
-        this.median = median;   // 中位数
-        this.range = range;     // 范围
+        this.median = median;
+        this.range = range;
         this.left = null;
         this.right = null;
-        this.yTree = null;      // yTree 是当前 x 范围内的点的 y 分布树
+        this.yTree = null;
     }
 }
 
+// range tree algorithm
 class RangeTree {
     constructor() {
         this.root = null;
@@ -24,6 +31,7 @@ class RangeTree {
         points.sort(compare);
         return Math.floor(points.length / 2);
     }
+    
     buildYTree(points) {
         if (points.length === 0) return null;
         if (points.length === 1) return new rNode(points[0].y, [points[0].y, points[0].y]);

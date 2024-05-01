@@ -65,5 +65,9 @@ tools.onMouseUp = function (event) {
             strokeColor: 'black'
         });
         if(debug) console.log(startPoint, endPoint);
+        var result = rangeTree.rangeQuery(Math.min(startPoint.x, endPoint.x), Math.max(startPoint.x, endPoint.x), Math.min(startPoint.y, endPoint.y), Math.max(startPoint.y, endPoint.y));
+        if(debug) console.log(result);
+        var outputText = result.map(point => `Point(x: ${point.x}, y: ${point.y})`).join("\n");
+        document.getElementById('outputTextarea').value = outputText;
     }
 }

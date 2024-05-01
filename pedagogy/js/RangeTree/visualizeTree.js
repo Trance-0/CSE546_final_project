@@ -402,24 +402,29 @@ function init(d) {
     }
 }
 function click(d) {
-    console.log(d);
-    const medianValue = d.name.match(/Median: (\d+),/)[1];
-    const median = parseInt(medianValue, 10);
-    const yTreeVisualization = rangeTree.visualizeYTreeAtXMedian(median);
-    console.log(yTreeVisualization);
-    var svgGroup = baseSvg.append("g");
+    const rangeMatch = d.name.match(/Range: \[(\d+), (\d+)\]/);
+    const xRange = [parseInt(rangeMatch[1]), parseInt(rangeMatch[2])];
+    const yTreeVisualization = rangeTree.visualizeYTreeAtXRange(xRange);
 
-// Define the root
-    root = yTreeVisualization;
-    root.x0 = viewerHeight / 2;
-    root.y0 = 0;
+    // Check if visualization data is available
+    if (yTreeVisualization) {
+        var svgGroup = baseSvg.append("g");
 
-// Layout the tree initially and center on the root node.
-    toggle(root);
-    update(root);
-    leftAlignNode(root);
-    init(root)
+        // Define the root
+        root = yTreeVisualization;
+        root.x0 = viewerHeight / 2;
+        root.y0 = 0;
+
+        // Layout the tree initially and center on the root node.
+        toggle(root);
+        update(root);
+        leftAlignNode(root);
+        init(root);
+    } else {
+        console.log("No matching yTree found for the given range.");
+    }
 }
+
 
 
 function update(source) {

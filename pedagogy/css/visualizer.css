@@ -30,6 +30,7 @@ html {
 
 font-family:sans-serif;
 
+/* default node supports */
 .node {
     cursor: pointer;
 }
@@ -45,6 +46,45 @@ font-family:sans-serif;
 }
 
 .node text {
+    font-size: 10px;
+}
+
+/* extra node support */
+.xNode {
+    cursor: pointer;
+}
+
+.xNode circle {
+    fill: #fff;
+    stroke: rgb(25, 175, 175);
+    stroke-width: 1.5px;
+}
+
+.xNode text {
+    font-size: 10px;
+}
+
+.yNode {
+    cursor: pointer;
+}
+
+.yNode circle {
+    fill: #fff;
+    stroke: #f33;
+    stroke-width: 1.5px;
+}
+
+.yNode text {
+    font-size: 10px;
+}
+
+.hNode circle {
+    fill: #fff;
+    stroke: rgb(255, 179, 0);
+    stroke-width: 1.5px;
+}
+
+.hNode text {
     font-size: 10px;
 }
 

@@ -26,7 +26,7 @@
     <style>
         .wustl-red-bg {
             background-color: #a51417;
-            color: var(--bs-light);
+            color: var(--bs-divght);
         }
 
         .wustl-red-text {
@@ -49,7 +49,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    ...
+                    This module has no special parameters to specify.
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -70,7 +70,7 @@
                         <h3 class="card-title"> Range tree Algorithm</h3>
 
                         <!-- help text -->
-                        <ul>
+                        <ul class="md-0">
                             <li>
                                 Click on the left panel to insert point
                             </li>
@@ -81,14 +81,14 @@
                                 Click and draw to select query when query mode is on
                             </li>
                         </ul>
-                        <div class="row">
+                        <div class="row g-2">
                             <div class="col-auto">
-                                <button class="btn btn-primary">
+                                <button class="btn btn-primary" id="prevStep">
                                     Previous step
                                 </button>
                             </div>
                             <div class="col-auto">
-                                <button class="btn btn-primary">
+                                <button class="btn btn-primary" id="nextStep">
                                     Next step
                                 </button>
                             </div>
@@ -110,35 +110,62 @@
                     </div>
                 </div>
                 <div class="card mt-3">
-
                     <div id="tree-container" class="card-img-top" style="height: 18rem;"></div>
+                    <p class="mb-0 ms-3" id="imgTitle"><small>test</small></p>
                     <div class="card-body">
-                        <h4 class="card-title"> Algorithm by step</h4>
-                        <div data-bs-spy="scroll" data-bs-target="#navbar-example3" data-bs-smooth-scroll="true" class="scrollspy-example-2 overflow-y-auto" style="max-height: 150px;" tabindex="0">
-                        <b>BuildXTree(S)</b>
-                        <ul class="list-unstyled">
-                            <li>If |S|=1: // create leaf node</li>
-                            <li class="ms-3">
-                                <ul class="list-unstyled">
-                                    <li>v = new X leaf node</li>
-                                    <li>v.pt = S</li>
-                                    <li>v.ytree = MakeYTreeFromOnePoint(S)</li>
-                                </ul>
-                            </li>
-                            <li>Else: // create a non-leaf node</li>
-                            <li class="ms-3">
-                                <ul class="list-unstyled">
-                                    <li>v = new non-leaf X node</li>
-                                    <li>v.val = median of X coordinates of all points in S</li>
-                                    <li>L = subset of S whose X coordinates are not greater than v.val</li>
-                                    <li>R = subset of S whose X coordinates are greater than v.val</li>
-                                    <li>v.left = BuildXTree(L)</li>
-                                    <li>v.right = BuildXTree(R)</li>
-                                    <li>v.ytree = MergeYTree(v.left.ytree,v.right.ytree)</li>
-                                </ul>
-                            </li>
-                            <li>Return v</li>
-                        </ul>
+                        <div class="row">
+                            <div class="col-auto">
+                                <div class="form-check align-middle">
+                                    <input class="form-check-input" type="checkbox" value="" id="showStep">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <h4 class="card-title">Algorithm by step</h4>
+                            </div>
+                        </div>
+                        <div data-bs-spy="scroll" data-bs-target="#navbar-example3" data-bs-smooth-scroll="true"
+                            class="scrollspy-example-2 overflow-y-auto" style="max-height: 150px;" tabindex="0">
+                            <b>BuildXTree(S)</b>
+                            <div class="row ms-3" id="baseCase">
+                                <div class="col-auto">If |S|=1: // create leaf node</div>
+                                <div class="w-100"></div>
+                                <div class="col-auto ms-3">
+                                    <div class="row">
+                                        <div class="col-auto">v = new X leaf node</div>
+                                        <div class="w-100"></div>
+                                        <div class="col-auto">v.pt = S</div>
+                                        <div class="w-100"></div>
+                                        <div class="col-auto">v.ytree = MakeYTreeFromOnePoint(S)</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row ms-3" id="xInduction">
+                                <div class="col-auto">Else: // create a non-leaf node</div>
+                                <div class="w-100"></div>
+                                <div class="col-auto ms-3">
+                                    <div class="row">
+                                        <div class="col-auto">v = new non-leaf X node</div>
+                                        <div class="w-100"></div>
+                                        <div class="col-auto">v.val = median of X coordinates of all points in S</div>
+                                        <div class="w-100"></div>
+                                        <div class="col-auto">L = subset of S whose X coordinates are not greater than
+                                            v.val</div>
+                                        <div class="w-100"></div>
+                                        <div class="col-auto">R = subset of S whose X coordinates are greater than v.val
+                                        </div>
+                                        <div class="w-100"></div>
+                                        <div class="col-auto">v.left = BuildXTree(L)</div>
+                                        <div class="w-100"></div>
+                                        <div class="col-auto">v.right = BuildXTree(R)</div>
+                                        <div class="w-100"></div>
+                                        <div class="col-auto" id="yInduction">v.ytree = MergeYTree(v.left.ytree,v.right.ytree)</div>
+                                    </div>
+                                </div>
+                                <div class="w-100"></div>
+                                <div class="col-auto">
+                                    Return v
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="card-footer">
@@ -146,16 +173,15 @@
                             id="outputTextarea"></textarea>
                     </div>
                 </div>
-
             </div>
         </div>
-    </div>
 
-    <!-- after loading codes -->
+        <!-- after loading codes -->
 
-    <script src="./js/rangeTree/rangeTree.js"></script>
-    <script src="./js/rangeTree/visualizeTree.js"></script>
-    <script src="./js/rangeTree/rangeTreeDemo.js"></script>
+        <script src="./js/rangeTree/visualizeTree.js"></script>
+        <script src="./js/rangeTree/histoGraph.js"></script>
+        <script src="./js/rangeTree/rangeTree.js"></script>
+        <script src="./js/rangeTree/rangeTreeDemo.js"></script>
 </body>
 
 </html>

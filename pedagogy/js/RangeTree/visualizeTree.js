@@ -33,34 +33,11 @@ var diagonal = d3.svg.diagonal()
         return [d.y, d.x];
     });
 
-// A recursive helper function for performing some setup by walking through all nodes
 
-function visualize(data) {
-    visit(data, function(d) {
-        totalNodes++;
-        maxLabelLength = Math.max(d.name.length, maxLabelLength);
-
-    }, function(d) {
-        return d.children && d.children.length > 0 ? d.children : null;
-    });
-    sortTree();
-
-    root = data;
-    root.x0 = viewerHeight / 2;
-    root.y0 = 0;
-
-    toggle(root);
-    update(root);
-    leftAlignNode(root);
-    init(root);
-
-}
-
+// apply visit function to each of the node and children
 function visit(parent, visitFn, childrenFn) {
     if (!parent) return;
-
     visitFn(parent);
-
     var children = childrenFn(parent);
     if (children) {
         var count = children.length;
@@ -71,7 +48,6 @@ function visit(parent, visitFn, childrenFn) {
 }
 
 // sort the tree according to the node names
-
 function sortTree() {
     tree.sort(function(a, b) {
         return b.name.toLowerCase() < a.name.toLowerCase() ? 1 : -1;
@@ -79,11 +55,9 @@ function sortTree() {
 }
 
 // Define the zoom function for the zoomable tree
-
 function zoom() {
     svgGroup.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 }
-
 
 // define the zoomListener which calls the zoom function on the "zoom" event constrained within the scaleExtents
 var zoomListener = d3.behavior.zoom().scaleExtent([0.1, 3]).on("zoom", zoom);
@@ -95,9 +69,9 @@ var baseSvg = d3.select("#tree-container").append("svg")
     .attr("class", "overlay")
     .call(zoomListener);
 
+var svgGroup = baseSvg.append("g");
 
 // Helper functions for collapsing and expanding nodes.
-
 function collapse(d) {
     if (d.children) {
         d._children = d.children;
@@ -114,17 +88,7 @@ function expand(d) {
     }
 }
 
-var overCircle = function(d) {
-    selectedNode = d;
-    updateTempConnector();
-};
-var outCircle = function(d) {
-    selectedNode = null;
-    updateTempConnector();
-};
-
 // Function to center node when clicked/dropped so node doesn't get lost when collapsing/moving with large amount of children.
-
 function centerNode(source) {
     scale = zoomListener.scale();
     x = -source.y0;
@@ -152,7 +116,6 @@ function leftAlignNode(source) {
 }
 
 // Toggle children function
-
 function toggleChildren(d) {
     if (d.children) {
         d._children = d.children;
@@ -190,10 +153,8 @@ function init(d) {
     } else {
         var isCollapsed = false;
     }
-
     d = toggleChildren(d);
     update(d);
-
     if (isCollapsed){
         leftAlignNode(d);
     } else {
@@ -222,10 +183,8 @@ function update(source) {
     // This makes the layout more consistent.
     var levelWidth = [1];
     var childCount = function(level, n) {
-
         if (n.children && n.children.length > 0) {
             if (levelWidth.length <= level + 1) levelWidth.push(0);
-
             levelWidth[level + 1] += n.children.length;
             n.children.forEach(function(d) {
                 childCount(level + 1, d);
@@ -249,6 +208,12 @@ function update(source) {
     });
 
     // Update the nodes…
+    // node = svgGroup.selectAll("g.node")
+    //     .data(nodes, function(d) {
+    //         return d.id || (d.id = ++i);
+    //     });
+
+    // Update the nodes…
     node = svgGroup.selectAll("g.node")
         .data(nodes, function(d) {
             return d.id || (d.id = ++i);
@@ -257,7 +222,7 @@ function update(source) {
     // Enter any new nodes at the parent's previous position.
     var nodeEnter = node.enter().append("g")
         // .call(dragListener)
-        .attr("class", source.nodeClass?source.nodeClass:'node')
+        .attr("class", source.nodeClass?'node '+source.nodeClass:'node')
         // .attr("class", "node")
         .attr("transform", function(d) {
             return "translate(" + source.y0 + "," + source.x0 + ")";
@@ -378,8 +343,29 @@ function update(source) {
     });
 }
 
-// Append a group which holds all nodes and which the zoom Listener can act upon.
-var svgGroup = baseSvg.append("g");
+// A recursive helper function for performing some setup by walking through all nodes
+function visualize(data) {
+    if (data===null) return;
+    // Append a group which holds all nodes and which the zoom Listener can act upon.
+    svgGroup.selectAll("g.node").remove();
+    totalNodes=0;
+    console.log(svgGroup.selectAll("g.node"));
+    visit(data, function(d) {
+        totalNodes++;
+        maxLabelLength = Math.max(d.name.length, maxLabelLength);
+    }, function(d) {
+        return d.children && d.children.length > 0 ? d.children : null;
+    });
+    sortTree();
+    root = data;
+    root.x0 = viewerHeight / 2;
+    root.y0 = 0;
+    toggle(root);
+    update(root);
+    leftAlignNode(root);
+    init(root);
+}
+
 
 // // Define the root
 // root = treeData;

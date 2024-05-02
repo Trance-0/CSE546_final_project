@@ -145,7 +145,7 @@ class RangeTree {
             if (start > end) return null;
             var mid = Math.floor(start + (end - start) / 2);
             // if ((end - start) % 2 != 0) mid = mid + 1;
-            console.log(`flatten mid${mid}, ${flatten[mid]}`)
+            // console.log(`flatten mid${mid}, ${flatten[mid]}`)
             let node = new rNode(flatten[mid].y, [flatten[start].y, flatten[end].y], flatten[mid]);
             this.yTreeMap.set(node.id, parentX);
             node.left = buildYTreeFromSorted(flatten, start, mid - 1);
@@ -199,7 +199,6 @@ class RangeTree {
         let lows = [];
         let highs = [];
         for (let i = 0; i < points.length; i++) {
-            if(i==medianIndex) continue;
             if (points[i].x-median.x <= 0) {
                 lows.push(points[i]);
             } else {

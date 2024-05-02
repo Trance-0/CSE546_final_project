@@ -88,13 +88,13 @@ tools.onMouseDown = function (event) {
             for (let i = 0; i < newGraphs.length; i++) {
                 histoGraphs.push(newGraphs[i]);
             }
+            // auto adding steps
+            idx++;
+            histoGraphs[idx].render();
+            checkButtons();
+            if (debug) console.log(histoGraphs);
+            if (debug) console.log(histoGraphs[idx]);
         }
-        // auto adding steps
-        idx++;
-        histoGraphs[idx].render();
-        checkButtons();
-        if (debug) console.log(histoGraphs);
-        if (debug) console.log(histoGraphs[idx]);
     }else{
         alert('Proceed to last step to continue operations');
     }
@@ -116,6 +116,13 @@ tools.onMouseUp = function (event) {
             if (debug) console.log(result);
             var outputText = result.map(point => `Point(x: ${point.x}, y: ${point.y})`).join("\n");
             document.getElementById('outputTextarea').value = outputText;
+            
+            // auto adding steps
+            // idx++;
+            // histoGraphs[idx].render();
+            // checkButtons();
+            // if (debug) console.log(histoGraphs);
+            // if (debug) console.log(histoGraphs[idx]);
         }
         checkButtons();
     }

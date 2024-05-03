@@ -1,11 +1,11 @@
 class HistoGraph {
-    constructor(name,highlightHTML=[],debugLevel=0,paperGraph=null,d3Tree=null){
+    constructor(name,highlightHTML=[],histoGraphDebugLevel=0,paperGraph=null,d3Tree=null){
         // figure name for current histoGraph
-        this.name=name;
+        this.stepName=name;
         // highlight algorithm segments
-        this.highlight=highlightHTML;
+        this.highlightElement=highlightHTML;
         // this denotes the debugging step we are in to prevent operations when we are not supposed to do.
-        this.debugLevel=debugLevel;
+        this.histoDebugLevel=histoGraphDebugLevel;
         // this is a layer object 
         this.graph=paperGraph;
         // this is a json object for tree data produced by rangeTree.js

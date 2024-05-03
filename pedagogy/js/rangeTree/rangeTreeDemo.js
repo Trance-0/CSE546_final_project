@@ -13,7 +13,7 @@ var queryRect = null;
 
 // histoGraphs
 var histoGraphs = [new HistoGraph("The rangeTree is currently empty",
-    highlightHTML = [], debugLevel = 0, paperGraph = new paper.Layer(), d3Tree = null)];
+    highlightHTML = [], histoGraphDebugLevel = 0, paperGraph = new paper.Layer(), d3Tree = null)];
 var idx = 0;
 histoGraphs[0].render();
 

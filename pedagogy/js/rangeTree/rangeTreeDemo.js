@@ -2,8 +2,9 @@
 var canvas = document.getElementById("myCanvas");
 canvas.width = $("#canvas-container").width();
 // canvas.height = $("#canvas-container").height();
-canvas.height = $(document).height()/2-80;
-    
+// canvas.height = $(document).height() / 2 - 80;
+canvas.height = 375;
+
 paper.setup(document.getElementById('myCanvas'));
 
 $("#insert-button").hide();
@@ -40,8 +41,9 @@ function readDebugLevel() {
 }
 
 // initialization
-checkButtons();    
+checkButtons();
 $("#queryTreeAlgo").hide();
+$("#warnings").hide();
 
 function checkButtons() {
     $("#query-button").prop("disabled", true);
@@ -98,10 +100,24 @@ tools.onMouseDown = function (event) {
         }
         else {
             var point = event.point;
+            var isDup = false;
             // parse points
             var simplePoint = { x: point.x, y: point.y };
-            // insert points
-            points.push(simplePoint);
+
+            points = points.filter(p => {
+                if (p.x === simplePoint.x || p.y === simplePoint.y) {
+                    $("#warnings").show();
+                    $("#warningText").text(`Non-standard configuration detected, removing point with collision [x:${p.x},y:${p.y}]`);
+                    isDup = true;
+                    return false;
+                }
+                return true;
+            });
+
+            // insert points, if dupe, do nothing, just remove it.
+            if (!isDup) {
+                points.push(simplePoint);
+            }
             rangeTree = new RangeTree();
             var newGraphs = [];
             readDebugLevel();
@@ -125,7 +141,7 @@ tools.onMouseDown = function (event) {
 tools.onMouseUp = function (event) {
     if (idx === histoGraphs.length - 1) {
         if (queryMode) {
-            
+
             rangeTree = new RangeTree();
             // silently create rangeTree based on current points
             rangeTree.buildTree(points, debugLevel = -1);
@@ -137,10 +153,10 @@ tools.onMouseUp = function (event) {
             let x2 = Math.max(startPoint.x, endPoint.x);
             let y1 = Math.min(startPoint.y, endPoint.y);
             let y2 = Math.max(startPoint.y, endPoint.y);
-            
+
             readDebugLevel();
-            var resultPack=rangeTree.rangeQuery(x1, x2, y1, y2,curDebugLevel);
-            
+            var resultPack = rangeTree.rangeQuery(x1, x2, y1, y2, curDebugLevel);
+
             // load output
             var result = resultPack.result;
             if (debug) console.log(result);

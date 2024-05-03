@@ -22,8 +22,8 @@ var root;
 // var viewerHeight = $(document).height();
 // var viewerWidth = 450;
 var viewerWidth = $("#tree-container").width();
-var viewerHeight = $(document).height()/2-80;
-// var viewerHeight = 300;
+// var viewerHeight = $(document).height()/2-80;
+var viewerHeight = 375;
 
 var tree = d3.layout.tree()
     .size([viewerHeight, viewerWidth]);

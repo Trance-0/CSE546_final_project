@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
     <!-- import jquery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <!-- import graphics -->
@@ -91,6 +91,9 @@
                             <li>
                                 Draw on the canvas to select query when query mode is on
                             </li>
+                            <li>
+                                Toggle checkbox below to enable step-by-step visualization
+                            </li>
                         </ul>
                         <div class="row g-2">
                             <div class="col-auto">
@@ -120,8 +123,12 @@
                         </div>
                     </div>
                 </div>
+                
+                <div class="card mt-3 text-bg-warning" id="warnings">
+                    <div class="card-body" id="warningText">
+                    </div>
+                </div>
                 <div class="card mt-3">
-
                     <div class="card-body">
                         <div class="row">
                             <div class="col-auto">
@@ -133,7 +140,7 @@
                                 <h4 class="card-title">Algorithm by step</h4>
                             </div>
                         </div>
-                        <div class="overflow-x-hidden" style="max-height: 500px;" tabindex="0" id="buildTreeAlgo">
+                        <div class="overflow-x-hidden" tabindex="0" id="buildTreeAlgo">
                             <b>BuildXTree(S)</b>
                             <div class="row ms-3" id="BbaseCase">
                                 <div class="col-auto">If |S|=1: // create leaf node</div>
@@ -177,7 +184,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="overflow-x-hidden" style="max-height: 500px;" tabindex="0" id="queryTreeAlgo">
+                        <div class="overflow-x-hidden" tabindex="0" id="queryTreeAlgo">
                             <b>QueryXTree(v,rX,rY)</b>
                             <div class="row ms-3" id="QbaseCase">
                                 <div class="col-auto">If v in rX: // collect all</div>

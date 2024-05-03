@@ -29,6 +29,11 @@
             color: var(--bs-divght);
         }
 
+        .highlight-code-bg {
+            background-color: #ede47d;
+            color: var(--bs-divght);
+        }
+
         .wustl-red-text {
             color: #a51417;
         }
@@ -62,7 +67,13 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-8 mt-3">
-                <canvas class="h-100 w-100" id="myCanvas"></canvas>
+                <div class="card">
+                    <div class="w-100" id="canvas-container">
+                        <canvas id="myCanvas"></canvas>
+                    </div>
+                    <div id="tree-container" class="w-100" style="height: 18rem;"></div>
+                    <p class="mt-2 ms-3 mb-2" id="imgTitle"><small>Text not Found</small></p>
+                </div>
             </div>
             <div class="col-md-4 mt-3">
                 <div class="card">
@@ -78,7 +89,7 @@
                                 Select option below to query points
                             </li>
                             <li>
-                                Click and draw to select query when query mode is on
+                                Draw on the canvas to select query when query mode is on
                             </li>
                         </ul>
                         <div class="row g-2">
@@ -110,8 +121,7 @@
                     </div>
                 </div>
                 <div class="card mt-3">
-                    <div id="tree-container" class="card-img-top" style="height: 18rem;"></div>
-                    <p class="mb-0 ms-3" id="imgTitle"><small>test</small></p>
+
                     <div class="card-body">
                         <div class="row">
                             <div class="col-auto">
@@ -123,10 +133,9 @@
                                 <h4 class="card-title">Algorithm by step</h4>
                             </div>
                         </div>
-                        <div data-bs-spy="scroll" data-bs-target="#navbar-example3" data-bs-smooth-scroll="true"
-                            class="scrollspy-example-2 overflow-y-auto" style="max-height: 150px;" tabindex="0">
+                        <div class="overflow-x-hidden" style="max-height: 500px;" tabindex="0" id="buildTreeAlgo">
                             <b>BuildXTree(S)</b>
-                            <div class="row ms-3" id="baseCase">
+                            <div class="row ms-3" id="BbaseCase">
                                 <div class="col-auto">If |S|=1: // create leaf node</div>
                                 <div class="w-100"></div>
                                 <div class="col-auto ms-3">
@@ -139,7 +148,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row ms-3" id="xInduction">
+                            <div class="row ms-3" id="BxInduction">
                                 <div class="col-auto">Else: // create a non-leaf node</div>
                                 <div class="w-100"></div>
                                 <div class="col-auto ms-3">
@@ -158,12 +167,39 @@
                                         <div class="w-100"></div>
                                         <div class="col-auto">v.right = BuildXTree(R)</div>
                                         <div class="w-100"></div>
-                                        <div class="col-auto" id="yInduction">v.ytree = MergeYTree(v.left.ytree,v.right.ytree)</div>
+                                        <div class="col-auto" id="ByInduction">v.ytree =
+                                            MergeYTree(v.left.ytree,v.right.ytree)</div>
                                     </div>
                                 </div>
                                 <div class="w-100"></div>
                                 <div class="col-auto">
                                     Return v
+                                </div>
+                            </div>
+                        </div>
+                        <div class="overflow-x-hidden" style="max-height: 500px;" tabindex="0" id="queryTreeAlgo">
+                            <b>QueryXTree(v,rX,rY)</b>
+                            <div class="row ms-3" id="QbaseCase">
+                                <div class="col-auto">If v in rX: // collect all</div>
+                                <div class="w-100"></div>
+                                <div class="col-auto ms-3">
+                                    <div class="row">
+                                        <div class="col-auto" id="QyInduction">Return QueryYTree(v, rY)</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row ms-3" id="QxInduction">
+                                <div class="col-auto">If v intersects rX:</div>
+                                <div class="w-100"></div>
+                                <div class="col-auto ms-3">
+                                    <div class="row">
+                                        <div class="col-auto">Return QueryXTree(v.left, rX, rY) U QueryXTree(v.right,
+                                            rX, rY) </div>
+                                    </div>
+                                </div>
+                                <div class="w-100"></div>
+                                <div class="col-auto">
+                                    Return null
                                 </div>
                             </div>
                         </div>

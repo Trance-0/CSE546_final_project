@@ -17,15 +17,10 @@ html {
 #tree-container {
     flex: 1;
     /* Each child will take equal width */
-    background-color: #cccccc;
+    background-color: #ffffff;
     /* Just for visibility */
     overflow: auto;
     /* Allows scrolling within each section */
-}
-
-#myCanvas {
-    background-color: #ffffff;
-    /* Specific background for canvas */
 }
 
 font-family:sans-serif;

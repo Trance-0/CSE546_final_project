@@ -1,3 +1,6 @@
+/*
+* class for keeping the snapshot for current phase, created by Zheyuan Wu
+*/
 class HistoGraph {
     constructor(name,highlightHTML=[],histoGraphDebugLevel=0,paperGraph=null,d3Tree=null){
         // figure name for current histoGraph
@@ -14,13 +17,17 @@ class HistoGraph {
     }
 
     render(){
-        console.log(`rendering graph ${this.name}`);
+        // console.log(`rendering graph ${this.name}`);
         var project= paper.project;
         project.clear();
         project.addLayer(this.graph);
         // function from visualizedTree.js
         if (this.treeGraph) visualize(this.treeGraph);
-        $("#imgTitle").text=this.name;
+        $("#imgTitle").text(this.stepName);
         // highlight html
+        $(".highlight-code-bg").removeClass("highlight-code-bg");
+        for (let i=0;i<this.highlightElement.length;i++){
+            $(this.highlightElement[i]).addClass("highlight-code-bg");
+        }
     }
 }

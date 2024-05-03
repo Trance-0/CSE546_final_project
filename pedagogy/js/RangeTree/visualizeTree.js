@@ -22,7 +22,8 @@ var root;
 // var viewerHeight = $(document).height();
 // var viewerWidth = 450;
 var viewerWidth = $("#tree-container").width();
-var viewerHeight = 300;
+var viewerHeight = $(document).height()/2-80;
+// var viewerHeight = 300;
 
 var tree = d3.layout.tree()
     .size([viewerHeight, viewerWidth]);
@@ -165,13 +166,14 @@ function init(d) {
 // define what to do when tree node is on click
 function click(d) {
     const dId= d.id;
+    // rangeTree global
     const newRoot= rangeTree.toggleTree(dId);
 
     // Check if visualization data is available
     if (newRoot) {
         visualize(newRoot);
     } else {
-        alert("No matching tree id found for given tree, did you edit your html source code?");
+        alert("No matching tree id found for given tree, range tree expansion only supported for the latest range tree.");
     }
 }
 
@@ -208,26 +210,21 @@ function update(source) {
     });
 
     // Update the nodes…
-    // node = svgGroup.selectAll("g.node")
-    //     .data(nodes, function(d) {
-    //         return d.id || (d.id = ++i);
-    //     });
-
-    // Update the nodes…
     node = svgGroup.selectAll("g.node")
         .data(nodes, function(d) {
+            // d.enter().append("g").attr("id",d.id)
+            // .attr("class", source.nodeClass?'node '+source.nodeClass:'node');
             return d.id || (d.id = ++i);
         });
 
     // Enter any new nodes at the parent's previous position.
     var nodeEnter = node.enter().append("g")
         // .call(dragListener)
-        .attr("class", source.nodeClass?'node '+source.nodeClass:'node')
+        .attr("class",  function(d) { return d.nodeClass?'node '+d.nodeClass:'node'})
         // .attr("class", "node")
         .attr("transform", function(d) {
             return "translate(" + source.y0 + "," + source.x0 + ")";
         })
-        .attr("id", source.id)
         .on('click', click);
 
     nodeEnter.append("circle")
@@ -349,7 +346,7 @@ function visualize(data) {
     // Append a group which holds all nodes and which the zoom Listener can act upon.
     svgGroup.selectAll("g.node").remove();
     totalNodes=0;
-    console.log(svgGroup.selectAll("g.node"));
+    // console.log(svgGroup.selectAll("g.node"));
     visit(data, function(d) {
         totalNodes++;
         maxLabelLength = Math.max(d.name.length, maxLabelLength);
@@ -365,18 +362,3 @@ function visualize(data) {
     leftAlignNode(root);
     init(root);
 }
-
-
-// // Define the root
-// root = treeData;
-// root.x0 = viewerHeight / 2;
-// root.y0 = 0;
-//
-// // Layout the tree initially and center on the root node.
-// toggle(root);
-// update(root);
-// leftAlignNode(root);
-
-//root.children.forEach(toggleAll);
-
-

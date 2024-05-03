@@ -1,5 +1,11 @@
 // initialization
+var canvas = document.getElementById("myCanvas");
+canvas.width = $("#canvas-container").width();
+// canvas.height = $("#canvas-container").height();
+canvas.height = $(document).height()/2-80;
+    
 paper.setup(document.getElementById('myCanvas'));
+
 $("#insert-button").hide();
 
 var tools = new paper.Tool();
@@ -17,9 +23,25 @@ var histoGraphs = [new HistoGraph("The rangeTree is currently empty",
 var idx = 0;
 histoGraphs[0].render();
 
+// currentRange Tree
+var rangeTree;
+
 // debug
-var debug = true;
-checkButtons();
+var curDebugLevel = 0;
+var debug = false;
+
+function readDebugLevel() {
+    if (debug) console.log($('#showStep').is(':checked'));
+    if ($('#showStep').is(':checked')) {
+        curDebugLevel = 3;
+    } else {
+        curDebugLevel = 0;
+    }
+}
+
+// initialization
+checkButtons();    
+$("#queryTreeAlgo").hide();
 
 function checkButtons() {
     $("#query-button").prop("disabled", true);
@@ -39,6 +61,8 @@ function checkButtons() {
 var queryMode = false;
 $("#query-button").on("click", function () {
     if (debug) console.log("query-button clicked!");
+    $("#buildTreeAlgo").hide();
+    $("#queryTreeAlgo").show();
     $("#insert-button").show();
     $("#query-button").hide();
     queryMode = true;
@@ -46,6 +70,8 @@ $("#query-button").on("click", function () {
 
 $("#insert-button").on("click", function () {
     if (debug) console.log("query-button clicked!");
+    $("#queryTreeAlgo").hide();
+    $("#buildTreeAlgo").show();
     $("#query-button").show();
     $("#insert-button").hide();
     queryMode = false;
@@ -78,13 +104,9 @@ tools.onMouseDown = function (event) {
             points.push(simplePoint);
             rangeTree = new RangeTree();
             var newGraphs = [];
-            if (debug) console.log($('#showStep').is(':checked'));
-            if ($('#showStep').is(':checked')) {
-                newGraphs = rangeTree.buildTree(points, debugLevel = 3);
-            } else {
-                newGraphs = rangeTree.buildTree(points, debugLevel = 0);
-            }
-            console.log(`received hisGraph size ${newGraphs.length}`)
+            readDebugLevel();
+            var newGraphs = rangeTree.buildTree(points, debugLevel = curDebugLevel);
+            if (debug) console.log(`received hisGraph size ${newGraphs.length}`)
             for (let i = 0; i < newGraphs.length; i++) {
                 histoGraphs.push(newGraphs[i]);
             }
@@ -95,7 +117,7 @@ tools.onMouseDown = function (event) {
             if (debug) console.log(histoGraphs);
             if (debug) console.log(histoGraphs[idx]);
         }
-    }else{
+    } else {
         alert('Proceed to last step to continue operations');
     }
 };
@@ -103,26 +125,40 @@ tools.onMouseDown = function (event) {
 tools.onMouseUp = function (event) {
     if (idx === histoGraphs.length - 1) {
         if (queryMode) {
+            
+            rangeTree = new RangeTree();
+            // silently create rangeTree based on current points
+            rangeTree.buildTree(points, debugLevel = -1);
+
             var endPoint = event.point;
-            if (debug) console.log(queryRect);
-            if (queryRect != null) queryRect.remove();
-            queryRect = new paper.Path.Rectangle({
-                from: startPoint,
-                to: endPoint,
-                strokeColor: 'black'
-            });
             if (debug) console.log(startPoint, endPoint);
-            var result = rangeTree.rangeQuery(Math.min(startPoint.x, endPoint.x), Math.max(startPoint.x, endPoint.x), Math.min(startPoint.y, endPoint.y), Math.max(startPoint.y, endPoint.y));
+            // normalize query
+            let x1 = Math.min(startPoint.x, endPoint.x);
+            let x2 = Math.max(startPoint.x, endPoint.x);
+            let y1 = Math.min(startPoint.y, endPoint.y);
+            let y2 = Math.max(startPoint.y, endPoint.y);
+            
+            readDebugLevel();
+            var resultPack=rangeTree.rangeQuery(x1, x2, y1, y2,curDebugLevel);
+            
+            // load output
+            var result = resultPack.result;
             if (debug) console.log(result);
             var outputText = result.map(point => `Point(x: ${point.x}, y: ${point.y})`).join("\n");
             document.getElementById('outputTextarea').value = outputText;
-            
+
+            // load graph
+            var newGraphs = resultPack.newGraph;
+            if (debug) console.log(`received hisGraph size ${newGraphs.length}`)
+            for (let i = 0; i < newGraphs.length; i++) {
+                histoGraphs.push(newGraphs[i]);
+            }
             // auto adding steps
-            // idx++;
-            // histoGraphs[idx].render();
-            // checkButtons();
-            // if (debug) console.log(histoGraphs);
-            // if (debug) console.log(histoGraphs[idx]);
+            idx++;
+            histoGraphs[idx].render();
+            checkButtons();
+            if (debug) console.log(histoGraphs);
+            if (debug) console.log(histoGraphs[idx]);
         }
         checkButtons();
     }

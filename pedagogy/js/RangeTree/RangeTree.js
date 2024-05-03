@@ -1,5 +1,5 @@
 /*
-* Core algorithm for range tree, written by Dijkstra Liu, debugging step added by Zheyuan Wu
+* Core algorithm for range tree, written by Dijkstra Liu, debugging step and visualization supports added by Zheyuan Wu
 */
 
 var uniqueId = 0;
@@ -46,8 +46,10 @@ class RangeTree {
         // recoding global points
         this.points = [];
         // recording histoGraphs
-        this.histoGraphs=[];
-        this.algorithmDebugLevel=0;
+        this.histoGraphs = [];
+        this.algorithmDebugLevel = 0;
+        // search box for drawing
+        this.searchBox = null;
     }
 
     // returns brute force medium O(n log n)
@@ -62,7 +64,7 @@ class RangeTree {
     //     }
     // }
 
-    // returns the medium element O(n)
+    // returns the medium element O(n), by Zheyuan Wu
     _quickSelectMedian(points, compare) {
         const n = points.length;
         if (n % 2 === 0) {
@@ -71,7 +73,6 @@ class RangeTree {
             return this._quickSelect(points, n / 2, compare);
         }
     }
-
 
     _quickSelect(points, k, compare) {
         if (points.length == 0) return;
@@ -114,16 +115,16 @@ class RangeTree {
     //     return node;
     // }
 
-    // merge yTree from two bst, use O(treeA+treeB)
+    // merge yTree from two bst, use O(treeA+treeB), by Zheyuan Wu
     _mergeYTree(treeA, treeB, parentX) {
         // flatten is a list of rPoint
         var flattenA = [];
         var flattenB = [];
-        this._collectAllPoints(treeA,flattenA);
-        this._collectAllPoints(treeB,flattenB)
+        this._collectAllLeaves(treeA, flattenA, (node) => node.point);
+        this._collectAllLeaves(treeB, flattenB, (node) => node.point)
         var flatten = []
-        console.log(`left: ${flattenA.length},right: ${flattenB.length}`);
-        var n=flattenA.length + flattenB.length;
+        // console.log(`left: ${flattenA.length},right: ${flattenB.length}`);
+        var n = flattenA.length + flattenB.length;
         // merge flattenA and flattenB
         for (var i = 0; i < n; i++) {
             if (flattenB.length === 0 || (flattenA.length !== 0 && flattenA[0].y < flattenB[0].y)) {
@@ -132,35 +133,36 @@ class RangeTree {
                 flatten.push(flattenB.shift());
             }
         }
-        console.log(`mergeYTree flattened: ${flatten.length}`);
+        // console.log(`mergeYTree flattened: ${flatten.length}`);
         // buildYTreeFromSortedArray, inclusive on start and end.
         const buildYTreeFromSorted = (flatten, start, end) => {
             // should be impossible.
             if (start > end) return null;
             // create leaf node.
-            if (start == end){
-                var leaf=new rNode(flatten[start].y, [flatten[start].y, flatten[start].y], flatten[start]);
+            if (start == end) {
+                var leaf = new rNode(flatten[start].y, [flatten[start].y, flatten[start].y], flatten[start]);
                 this.yTreeMap.set(leaf.id, parentX);
                 return leaf;
             }
             // load lower mid as val
             var mid = Math.floor(start + (end - start) / 2);
             // if ((end - start) % 2 != 0) mid = mid + 1;
-            let node = new rNode(flatten[mid].y,[flatten[start].y, flatten[end].y],null);
+            let node = new rNode(flatten[mid].y, [flatten[start].y, flatten[end].y], null);
             this.yTreeMap.set(node.id, parentX);
             node.left = buildYTreeFromSorted(flatten, start, mid);
             node.right = buildYTreeFromSorted(flatten, mid + 1, end);
+            // visualize on step
+            // console.log(`debug y tree id ${node.id}, aprent x ${parentX.id}`);
+            if (this.algorithmDebugLevel >= 2) {
+                this.histoGraphs.push(new HistoGraph(`Building yRange Tree merge on xTree ${parentX.toString()}`,
+                    highlightHTML = ["#ByInduction"],
+                    histoGraphDebugLevel = 2,
+                    paperGraph = this.visualizeGraph(node, [node.id]),
+                    d3Tree = this.visualizeTree(parentX, [parentX.right ? parentX.right.id : -1, parentX.left ? parentX.left.id : -1])));
+            }
             return node;
         }
         let yTree = buildYTreeFromSorted(flatten, 0, flatten.length - 1);
-        // visualize on step
-        if (this.algorithmDebugLevel > 1) {
-            this.histoGraphs.push(new HistoGraph(`Building yRange Tree merge on xTree ${parentX.toString()}`,
-                highlightHTML = [],
-                histoGraphDebugLevel=2,
-                paperGraph = this.visualizeGraph(this.root, [parentX.id]),
-                d3Tree = this.visualizeTree(this.root, [parentX.id])));
-        }
         return yTree;
     }
 
@@ -168,20 +170,22 @@ class RangeTree {
     buildTree(points, debugLevel = 0) {
         // render points
         this.points = points;
-        this.algorithmDebugLevel=debugLevel;
+        this.algorithmDebugLevel = debugLevel;
         this.root = this._buildXTree(points);
-        var lastPoint=this.points[this.points.length - 1];
-        this.histoGraphs.push(new HistoGraph(`Complete Range Tree after inserting (${lastPoint.x},${lastPoint.y})`,
-            highlightHTML = [],
-            histoGraphDebugLevel =0,
-            paperGraph = this.visualizeGraph(this.root),
-            d3Tree = this.visualizeTree(this.root)));
+        var lastPoint = this.points[this.points.length - 1];
+
+        if (this.algorithmDebugLevel >= 0) {
+            this.histoGraphs.push(new HistoGraph(`Complete Range Tree after inserting (${lastPoint.x},${lastPoint.y})`,
+                highlightHTML = [],
+                histoGraphDebugLevel = 0,
+                paperGraph = this.visualizeGraph(this.root),
+                d3Tree = this.visualizeTree(this.root)));
+        }
         return this.histoGraphs;
     }
 
     // recursive building tree
     _buildXTree(points) {
-        console.log(points)
         if (points.length === 0) return null;
         // create leaf node
         if (points.length === 1) {
@@ -190,6 +194,13 @@ class RangeTree {
             xTree.yTree = yTree;
             this.yTreeMap.set(yTree.id, xTree);
             this.xTreeMap.set(xTree.id, xTree);
+            if (this.algorithmDebugLevel >= 1) {
+                this.histoGraphs.push(new HistoGraph(`Building base Tree on ${xTree.toString()}`,
+                    highlightHTML = ["#BbaseCase"],
+                    histoGraphDebugLevel = 1,
+                    paperGraph = this.visualizeGraph(xTree, [xTree.id]),
+                    d3Tree = this.visualizeTree(xTree, [xTree.id])));
+            }
             return xTree;
         }
         // brute-force median
@@ -199,33 +210,32 @@ class RangeTree {
         // console.log(median);
         let lows = [];
         let highs = [];
-        let range=[points[0].x, points[0].x];
+        let range = [points[0].x, points[0].x];
         // split the points and find range
         for (let i = 0; i < points.length; i++) {
-            if (points[i].x<=median.x) {
+            if (points[i].x <= median.x) {
                 lows.push(points[i]);
             } else {
                 highs.push(points[i]);
             }
-            range[0]=Math.min(range[0],points[i].x);
-            range[1]=Math.max(range[1],points[i].x);
+            range[0] = Math.min(range[0], points[i].x);
+            range[1] = Math.max(range[1], points[i].x);
         }
-        let node = new rNode(median.x, range,null);
+        let node = new rNode(median.x, range, null);
+        this.xTreeMap.set(node.id, node);
         // console.log(`buildXTree split arr size: loSize: ${lows.length}, hiSize: ${highs.length}`);
         node.left = this._buildXTree(lows);
         node.right = this._buildXTree(highs);
         // directly build y tree on this level
         // node.yTree = this._buildYTree(points);
         // merge y tree ono this level
-        node.yTree = this._mergeYTree(node.left?node.left.yTree:null, node.right?node.right.yTree:null,node);
-        this.xTreeMap.set(node.id,node);
-        this.yTreeMap.set(node.yTree.id,node);
+        node.yTree = this._mergeYTree(node.left ? node.left.yTree : null, node.right ? node.right.yTree : null, node);
         // visualize on step
-        console.log(`can debug on x tree:${this.debugLevel > 0} ${this.debugLevel}`);
-        if (this.algorithmDebugLevel > 0) {
+        // console.log(`can debug on x tree:${this.debugLevel > 0} ${this.debugLevel}`);
+        if (this.algorithmDebugLevel >= 1) {
             this.histoGraphs.push(new HistoGraph(`Building xRange Tree on ${node.toString()}`,
-                highlightHTML = [],
-                histoGraphDebugLevel=1,
+                highlightHTML = ["#BxInduction"],
+                histoGraphDebugLevel = 1,
                 paperGraph = this.visualizeGraph(node, [node.id]),
                 d3Tree = this.visualizeTree(node, [node.id])));
         }
@@ -233,21 +243,41 @@ class RangeTree {
     }
 
     // Query to find all points within the given range
-    rangeQuery(x1, x2, y1, y2,debugLevel=0) {
-        const result = [];
-        this.algorithmDebugLevel=debugLevel;
-        this._rangeQuery2D(this.root, x1, x2, y1, y2, result);
-        return result;
+    rangeQuery(x1, x2, y1, y2, debugLevel = 0) {
+        // query result is a list of leaf node
+        const queryResult = [];
+        this.algorithmDebugLevel = debugLevel;
+        this.searchBox = [x1, x2, y1, y2];
+        this._rangeQuery2D(this.root, x1, x2, y1, y2, queryResult);
+
+        // console.log(`qrec${x1},${x1},${x1},${x1}`);
+        // console.log(`highlightid: ${queryResult.map((node)=>node.id)}`);
+
+        if (this.algorithmDebugLevel >= 0) {
+            this.histoGraphs.push(new HistoGraph(`Query on xRange[${x1},${x2}], yRange[${y1},${y2}]`,
+                highlightHTML = [],
+                histoGraphDebugLevel = 1,
+                paperGraph = this.visualizeGraph(this.root, queryResult.map((node) => node.id)),
+                d3Tree = this.visualizeTree(this.root, queryResult.map((node) => node.id))
+            ));
+        }
+        return { result: queryResult.map((node) => node.point), newGraph: this.histoGraphs };
     }
 
     _rangeQuery2D(node, x1, x2, y1, y2, result) {
         if (!node) return;
-
+        if (this.algorithmDebugLevel >= 1) {
+            this.histoGraphs.push(new HistoGraph(`Searching xRange Tree on ${node.toString()}`,
+                highlightHTML = ["#QxInduction"],
+                histoGraphDebugLevel = 1,
+                paperGraph = this.visualizeGraph(this.root, [node.id]),
+                d3Tree = this.visualizeTree(this.root, [node.id])));
+        }
         // Check if the current x range of the node is within the query x range
         if (node.range[0] >= x1 && node.range[1] <= x2) {
-            if (!node.yTree){
+            if (!node.yTree) {
                 result.push(node.point);
-            }else{
+            } else {
                 this._rangeQueryYTree(node.yTree, y1, y2, result);
             }
             // Entire x range of the node is within the query range, search the yTree directly
@@ -264,11 +294,24 @@ class RangeTree {
 
     _rangeQueryYTree(node, y1, y2, result) {
         if (!node) return;
-
+        if (this.algorithmDebugLevel >= 2) {
+            this.histoGraphs.push(new HistoGraph(`Searching yRange Tree on ${node.toString()}`,
+                highlightHTML = ["QyInduction"],
+                histoGraphDebugLevel = 1,
+                paperGraph = this.visualizeGraph(this.yTreeMap.get(node.id).yTree, [node.id]),
+                d3Tree = this.visualizeTree(this.yTreeMap.get(node.id).yTree, [node.id])));
+        }
         // Check if the current y range of the node is completely within the query y range
         if (node.range[0] >= y1 && node.range[1] <= y2) {
             // Entire y range of the node is within the query range, add all points from this subtree
-            this._collectAllPoints(node, result);
+            this._collectAllLeaves(node, result, (node) => node);
+            if (this.algorithmDebugLevel >= 2) {
+                this.histoGraphs.push(new HistoGraph(`Collecting yRange Tree on ${node.toString()}`,
+                    highlightHTML = ["QbaseCase"],
+                    histoGraphDebugLevel = 1,
+                    paperGraph = this.visualizeGraph(this.yTreeMap.get(node.id).yTree, [node.id]),
+                    d3Tree = this.visualizeTree(this.yTreeMap.get(node.id).yTree, [node.id])));
+            }
         } else {
             // Check for overlap with the query y range
             if (node.range[0] <= y2 && node.range[1] >= y1) {
@@ -281,14 +324,14 @@ class RangeTree {
     }
 
     // Helper method to collect all points from the subtree rooted at `node`
-    _collectAllPoints(node, result) {
+    _collectAllLeaves(node, result, childFn) {
         if (node.point) {
-            result.push(node.point);
+            result.push(childFn(node));
             return;
         }
         // Recurse to collect points from all descendants
-        if (node.left) this._collectAllPoints(node.left, result);
-        if (node.right) this._collectAllPoints(node.right, result);
+        if (node.left) this._collectAllLeaves(node.left, result, childFn);
+        if (node.right) this._collectAllLeaves(node.right, result, childFn);
     }
 
     // returns d3tree json object, with highlight, {root:rootTree,debugLevel:debugLevel,highlightNodeIds:hightLightIds}
@@ -309,8 +352,8 @@ class RangeTree {
             if (children.length) obj.children = children;
             return obj;
         };
-        var data=traverse(root)
-        console.log(`visualizing tree ${data}, debuglevel=${this.debugLevel}, ${this.histoGraphs.length}`);
+        var data = traverse(root)
+        // console.log(`visualizing tree ${data}, debuglevel=${this.debugLevel}, ${this.histoGraphs.length}`);
         return data;
     }
 
@@ -328,16 +371,29 @@ class RangeTree {
     // returns layer object showing the graph
     visualizeGraph(root, hightLightIds = []) {
         const getRandomColor = () => {
-            var letters = '0123456789ABCDEF';
+            var letters = '0123456789ABCD';
             var color = '#';
             for (var i = 0; i < 6; i++) {
-              color += letters[Math.floor(Math.random() * 16)];
+                color += letters[Math.floor(Math.random() * 16)];
             }
             return color;
-          }
-          var xColorMap=new Map();
-        var layer = new paper.Layer();
-        layer.activate();
+        }
+
+        // get color by depth, the lower the depth, the lighter the rectangle
+        var maxd = -1;
+        // defines the brightest color, 0 for black, 1 for white
+        var maxBrightness = 0.9, minBrightness = 0.1;
+        const getColorByDepth = (d) => {
+            if (maxd === -1) maxd = d;
+            var color = '#';
+            for (var i = 0; i < 3; i++) {
+                // convert d to range [0,1)
+                let cf = (maxd - d + 1) / (maxd + 1);
+                color += (Math.floor((minBrightness + cf * (maxBrightness - minBrightness)) * 255)).toString(16);
+            }
+            return color;
+        }
+        var xColorMap = new Map();
         // all the successive point will be added to the new layer
         var highLight = new Set(hightLightIds);
         // load boundary points
@@ -349,41 +405,72 @@ class RangeTree {
             maxPoint.x = Math.max(points[i].x, maxPoint.x);
             maxPoint.y = Math.max(points[i].y, maxPoint.y);
         }
+        var rectGroup = new paper.Group();
+        var pointGroup = new paper.Group();
+        // draw plain points
+        for (let i = 0; i < this.points.length; i++) {
+            pointGroup.addChild(new paper.Path.Circle({
+                center: points[i],
+                radius: 3,
+                fillColor: 'red'
+            }));
+        }
+        var curd = 0;
         const traverse = (node) => {
-            if (node === null) return;
-            var boundingRect = null;
+            if (!node) return;
+            if (node.yTree) curd++;
+            traverse(node.left);
+            traverse(node.right);
+            if (node.yTree) curd--;
+            var boundingRect=null;
             if (this.xTreeMap.has(node.id)) {
-                var xColor=getRandomColor();
-                boundingRect = new paper.Path.Rectangle({
+                // var xColor=getRandomColor();
+                var xColor = getColorByDepth(curd);
+                boundingRect=new paper.Path.Rectangle({
                     from: new paper.Point(node.range[0], minPoint.y),
                     to: new paper.Point(node.range[1], maxPoint.y),
                     strokeColor: xColor
                 });
-                xColorMap.set(node.id,xColor);
+                xColorMap.set(node.id, xColor);
                 traverse(node.yTree);
             } else {
-                boundingRect = new paper.Path.Rectangle({
-                    from: new paper.Point(this.yTreeMap.get(node.id).range[0],node.range[0]),
-                    to: new paper.Point(this.yTreeMap.get(node.id).range[1],node.range[1]),
-                    strokeColor: xColorMap.get(this.yTreeMap.get(node.id).id)
+                let xId = this.yTreeMap.get(node.id).id;
+                boundingRect=new paper.Path.Rectangle({
+                    from: new paper.Point(this.yTreeMap.get(node.id).range[0], node.range[0]),
+                    to: new paper.Point(this.yTreeMap.get(node.id).range[1], node.range[1]),
+                    // strokeColor: xColorMap.has(xId)?xColorMap.get(xId):getRandomColor()
+                    strokeColor: xColorMap.has(xId) ? xColorMap.get(xId) : getColorByDepth(curd)
                 });
+                // console.log(`ytree inserted ${[this.yTreeMap.get(node.id).range[0],node.range[0],this.yTreeMap.get(node.id).range[1],node.range[1]]},${hightLightIds[0]},${node.id}`);
             }
+            // draw highlight
             if (highLight.has(node.id)) {
                 boundingRect.fillColor = "#ffbb99";
+                boundingRect.opacity = 0.5;
+                if (node.point) {
+                    pointGroup.addChild(new paper.Path.Circle({
+                        center: node.point,
+                        radius: 3,
+                        fillColor: 'yellow',
+                        strokeColor: 'orange'
+                    }));
+                }
             }
-            traverse(node.left);
-            traverse(node.right);
+            rectGroup.addChild(boundingRect);
             return;
         };
         traverse(root);
-        for (let i = 0; i < this.points.length; i++) {
-            var circle = new paper.Path.Circle({
-                center: points[i],
-                radius: 3,
-                fillColor: 'red'
-            });
+
+        var layer = new paper.Layer([rectGroup, pointGroup]);
+        // draw search box
+        if (this.searchBox) {
+            layer.addChild(new paper.Path.Rectangle({
+                from: new paper.Point(this.searchBox[0], this.searchBox[2]),
+                to: new paper.Point(this.searchBox[1], this.searchBox[3]),
+                strokeColor: 'red'
+            }));
         }
-        console.log(`visualizing graph ${layer}`);
+        // console.log(`visualizing graph ${layer}`);
         return layer;
     }
 }
